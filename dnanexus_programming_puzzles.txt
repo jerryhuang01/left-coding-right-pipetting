@@ -5,7 +5,7 @@ https://dnanexus.com/careers/puzzles
 
 Insane in the Membrane
 ----------------------
-Danny Dendrite is a brain cell of an engineer at DNAnexus. Danny Dendrite has a great life -- he gets to think about interesting problems all day, and he's always well-nourished by all the tasty snacks in the office. But Danny Dendrite sometimes has trouble with his DNA: since there's so much other stuff in the nucleus, like proteins, Danny Dendrite sometimes has trouble finding room for his genome. Fortunately, Danny Dendrite keeps careful track of everything in his nucleus. Danny Dendrite represents his nucleus as a N-nanometer by M-nanometer grid, and at each 1nm * 1nm square he knows whether or not it is filled by something. Also, he knows that his genome is exactly X nanometers long. Help Danny Dendrite organize his nucleus by writing a program that finds a place for his DNA to go. Danny Dendrite will give you a file in the following format: The first line has the number of rows in the nucleus (N), then the number of columns (M), then the length of Danny Dendrite's genome (X). Following that are N lines, each of which has M characters: an ¡¥o¡¦ represents an empty square and an ¡¥x¡¦ represents a filled square.
+Danny Dendrite is a brain cell of an engineer at DNAnexus. Danny Dendrite has a great life -- he gets to think about interesting problems all day, and he's always well-nourished by all the tasty snacks in the office. But Danny Dendrite sometimes has trouble with his DNA: since there's so much other stuff in the nucleus, like proteins, Danny Dendrite sometimes has trouble finding room for his genome. Fortunately, Danny Dendrite keeps careful track of everything in his nucleus. Danny Dendrite represents his nucleus as a N-nanometer by M-nanometer grid, and at each 1nm * 1nm square he knows whether or not it is filled by something. Also, he knows that his genome is exactly X nanometers long. Help Danny Dendrite organize his nucleus by writing a program that finds a place for his DNA to go. Danny Dendrite will give you a file in the following format: The first line has the number of rows in the nucleus (N), then the number of columns (M), then the length of Danny Dendrite's genome (X). Following that are N lines, each of which has M characters: an ï¿½ï¿½oï¿½ï¿½ represents an empty square and an ï¿½ï¿½xï¿½ï¿½ represents a filled square.
 
 Print for him a path, consisting of a list of positions, starting anywhere in the nucleus, where:
 
@@ -14,7 +14,7 @@ Print for him a path, consisting of a list of positions, starting anywhere in th
     The path passes through each position in the nucleus at most once
     The number of positions visited is equal to the length of Danny Dendrite's genome (the starting and ending positions both count).
 
-If no path exists, just print ¡§impossible¡¨.
+If no path exists, just print "mpossible"
 
 Sample Input file:
 
