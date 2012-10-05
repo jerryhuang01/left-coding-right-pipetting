@@ -1,0 +1,51 @@
+DNANexus - Programming Puzzles
+
+https://dnanexus.com/careers/puzzles
+
+
+Insane in the Membrane
+----------------------
+Danny Dendrite is a brain cell of an engineer at DNAnexus. Danny Dendrite has a great life -- he gets to think about interesting problems all day, and he's always well-nourished by all the tasty snacks in the office. But Danny Dendrite sometimes has trouble with his DNA: since there's so much other stuff in the nucleus, like proteins, Danny Dendrite sometimes has trouble finding room for his genome. Fortunately, Danny Dendrite keeps careful track of everything in his nucleus. Danny Dendrite represents his nucleus as a N-nanometer by M-nanometer grid, and at each 1nm * 1nm square he knows whether or not it is filled by something. Also, he knows that his genome is exactly X nanometers long. Help Danny Dendrite organize his nucleus by writing a program that finds a place for his DNA to go. Danny Dendrite will give you a file in the following format: The first line has the number of rows in the nucleus (N), then the number of columns (M), then the length of Danny Dendrite's genome (X). Following that are N lines, each of which has M characters: an ．o・ represents an empty square and an ．x・ represents a filled square.
+
+Print for him a path, consisting of a list of positions, starting anywhere in the nucleus, where:
+
+    Each position is empty
+    Each successive position is only 1 nm away from the one before it
+    The path passes through each position in the nucleus at most once
+    The number of positions visited is equal to the length of Danny Dendrite's genome (the starting and ending positions both count).
+
+If no path exists, just print ：impossible；.
+
+Sample Input file:
+
+5 4 8
+oxoo
+xoxo
+ooxo
+xooo
+oxox
+
+Sample Output:
+
+1,1
+2,1
+3,1
+3,2
+3,3
+2,3
+1,3
+0,3
+
+
+
+Hungry Hungry Coders
+----------------------
+The engineers at DNAnexus have a problem. It's lunchtime, and like always, catered lunches have been delivered for every employee. But they need help figuring out who should get which lunch. There are N engineers and M lunches (where M ? N, of course), and each engineer-lunch pair is associated with an "enjoyment value," which represents how much that engineer will enjoy that meal. Write a program to give lunches to engineers such that the total enjoyment value is maximized.
+
+
+
+Genome Search
+----------------------
+We've just finished sequencing a new organism, and we want to check whether its genome contains any of our favorite DNA sequences. Fortunately, we're picky, so we don't have many of them -- only K sequences, each of length M (where K and M are small -- we can easily fit all of our favorite sequences in memory). Unfortunately, the genome we sequenced is the largest known -- that of the amoeboid Polychaos dubium (http://en.wikipedia.org/wiki/Polychaos_dubium), weighing in at an estimated N = 670 billion base pairs (Fun fact: if each of your cells had a genome this big, just your DNA would weigh about as much as the rest of your body).
+
+Design and implement an algorithm that can determine all of the locations where our K favorite sequences, each of length M, appear within the genome of length N. You must not load the entire genome into memory; furthermore, you may read through the genome sequence only once.

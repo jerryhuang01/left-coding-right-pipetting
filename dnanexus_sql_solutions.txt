@@ -1,0 +1,225 @@
+1. 'Insane in the Membrane'
+To find the path for the genome of length of X nm within a M * N of Danny Dendrite's nucleus.
+
+Solution:
+The solution could be broken into three parts:
+a) Find path between two empty position as 'edges'
+b) Find two neighboring 'edges'
+c) Construct the whole path by connecting edges
+
+Suppose the coordinates within Danny Dendrite could be represented as as table in MySQL as
+
+Danny_Dendrite ( M INT(2), N INT(2), S CHAR(1))
+
+A table corresponding to the sample input in the problem is as this:
+
++---+---+---+
+| N | M | S |
++---+---+---+
+| 1 | 1 | o |
+| 1 | 2 | x |
+| 1 | 3 | o |
+| 1 | 4 | o |
+| 2 | 1 | x |
+| 2 | 2 | o |
+| 2 | 3 | x |
+| 2 | 4 | o |
+
+
+The algorithm could be implemented in SQL as this:
+
+	--
+	-- OCCUPY_nucleus.sql
+	--
+	CREATE TABLE edges ( node1 VARCHAR(5), node2 VARCHAR(5) );
+	INSERT INTO edges
+	SELECT DISTINCT concat(d1.N,", ", d1.M) as node1, concat(d2.N,", ", d2.M) as node2
+	FROM `Danny_Dendrite` d1, `Danny_Dendrite` d2 
+	WHERE 
+	d1.S = "o" AND d2.S = "o" AND d1.N <> d1.M 
+	AND  ( (d1.N = d2.N AND d1.M = d2.M - 1) OR (d1.M = d2.M AND d1.N = d2.N - 1) )
+	UNION
+	SELECT DISTINCT concat(d2.N,", ", d2.M) as node1, concat(d1.N,", ", d1.M) as node2
+	FROM `Danny_Dendrite` d1, `Danny_Dendrite` d2 
+	WHERE 
+	d1.S = "o" AND d2.S = "o" AND d1.N <> d1.M 
+	AND  ( (d1.N = d2.N AND d1.M = d2.M - 1) OR (d1.M = d2.M AND d1.N = d2.N - 1) )
+	;
+
+	SELECT IFNULL(concat(E1.node1,"; ", E2.node1,"; ", E3.node1,"; ", E4.node1,"; ", E5.node1,"; ", E6.node1,"; ", E7.node1,"; ", E8.node1,"; ", E9.node1),'impossible') AS Results
+	FROM edges E1, edges E2, edges E3, edges E4, edges E5, edges E6, edges E7, edges E8, edges E9
+	WHERE 
+	(E1.node2 = E2.node1 AND E1.node1 <> E2.node2)
+	AND (E2.node2 = E3.node1 AND E2.node1 <> E3.node2)
+	AND (E3.node2 = E4.node1 AND E3.node1 <> E4.node2)
+	AND (E4.node2 = E5.node1 AND E4.node1 <> E5.node2)
+	AND (E5.node2 = E6.node1 AND E5.node1 <> E6.node2)
+	AND (E6.node2 = E7.node1 AND E6.node1 <> E7.node2)
+	AND (E7.node2 = E8.node1 AND E7.node1 <> E8.node2)
+	AND (E8.node2 = E9.node1)
+	ORDER BY Results;
+	-- END OF OCCUPY_nucleus.sql
+
+
+The script would give all possible paths (forward and reverse) for the sample input as this:
+
++------------------------------------------------------+
+| Results                                              |
++------------------------------------------------------+
+| 1, 3; 1, 4; 2, 4; 3, 4; 4, 4; 4, 3; 4, 2; 3, 2; 3, 1 |
+| 3, 1; 3, 2; 4, 2; 4, 3; 4, 4; 3, 4; 2, 4; 1, 4; 1, 3 |
++------------------------------------------------------+
+2 rows in set (0.06 sec)
+
+
+
+
+2. 'Hungry Hungry Coders'
+To determin the best distribution of M catered lunches for N engineers based on the 'enjoyment values' between engineers and lunch food.
+
+Solution:
+The solution is based on the following assumptions not stated in the problem by first computing all combinations of enginner-lunch pair with their 'enjoyment value' (e_value).
+a) Each day there are M unique catered lunches for N unique enginners, where M always > N.
+b) Each enginner could have only one lunch box
+c) The M lunches each day is a subset of food F, which is the whole set of lunches ever available for the engineers in their universe.
+d) The goal of the distribution of the lunches is to reach the maximum satisfaction based on the overall 'enjoyment values'.
+
+
+Given 3 tables to describe the engineers, food and enjoyments:
+engineers 	( id VARCHAR(5), name VARCHAR(25) )
+food		( id VARCHAR(5), name VARCHAR(25) )
+enjoyments	( eng_id VARCHAR(25), food_id VARCHAR(25), e_value INT )
+
+
+with the following entries of 5 enginners, 10 food, and their enjoyment values:
+
+engineers ('Danny', 'Andrea', 'James', 'Arend', 'Serafim')
+food ('grilled panini','beef burrito','chicken burrito','tuna sandwich','chickpea sandwich','tempura','dumplings','carnitas burrito bowl','big mac','whopper')
+
+enjoyments ('Danny; grilled panini; 7','Danny; beef burrito; 5','Danny; chicken burrito;6','Danny;tuna sandwich;1' ...etc )
+
+
+The algorithm is implemented by first coomputing all combinations for the team for all engineers and food:
+
+--
+-- all_you_can_eat.sql
+--
+CREATE TABLE lunch_combinations ( 
+id1 VARCHAR(25), food1 VARCHAR(25), eval1 INT,
+id2 VARCHAR(25), food2 VARCHAR(25), eval2 INT,
+id3 VARCHAR(25), food3 VARCHAR(25), eval3 INT,
+id4 VARCHAR(25), food4 VARCHAR(25), eval4 INT,
+id5 VARCHAR(25), food5 VARCHAR(25), eval5 INT,
+e_sum INT
+);
+
+INSERT INTO lunch_combinations
+SELECT DISTINCT *
+FROM
+(SELECT DISTINCT
+e1.eng_id AS id1, e1.food_id AS food1, e1.e_value AS eval1,
+e2.eng_id AS id2, e2.food_id AS food2, e2.e_value AS eval2,
+e3.eng_id AS id3, e3.food_id AS food3, e3.e_value AS eval3,
+e4.eng_id AS id4, e4.food_id AS food4, e4.e_value AS eval4,
+e5.eng_id AS id5, e5.food_id AS food5, e5.e_value AS eval5,
+e1.e_value + e2.e_value + e3.e_value + e4.e_value + e5.e_value AS e_sum
+FROM enjoyments e1, enjoyments e2, enjoyments e3, enjoyments e4, enjoyments e5
+WHERE e1.eng_id = "Danny" AND e2.eng_id = "Andreas" AND e3.eng_id = "James" AND e4.eng_id = "Arend" AND e5.eng_id = "Serafim"
+) AS lunch_combinations
+WHERE 
+food1 NOT IN (food2, food3, food4, food5)
+AND food2 NOT IN (food1, food3, food4, food5)
+AND food3 NOT IN (food1, food2, food4, food5)
+AND food4 NOT IN (food1, food2, food3, food5)
+AND food5 NOT IN (food1, food2, food3, food4)
+;
+-- END OF all_you_can_eat.sql
+
+For a given Friday, suppose the lunches ordered are:
+friday ('grilled panini','big mac','chicken burrito','tuna sandwich','chickpea sandwich','dumplings','whopper')
+
+The solution could be found with this SQL script:
+
+--
+-- friday_lunch_distribution.sql
+--
+SELECT *
+FROM lunch_combinations l
+WHERE 
+l.food1 IN ( SELECT food FROM friday)
+AND l.food2 IN ( SELECT food FROM friday )
+AND l.food3 IN ( SELECT food FROM friday )
+AND l.food4 IN ( SELECT food FROM friday )
+AND l.food5 IN ( SELECT food FROM friday )
+ORDER BY e_sum DESC
+LIMIT 3;
+-- END OF friday_lunch_distribution.sql
+
+
+This will give us a best distribution of lunch pair as: 
+
+( 'Danny - chickpea sandwich', 'Andreas - big mac', 'James - whopper', 'Arend - chicken burrito', 'Serafim - grilled panini' ) 
+
+with a max sum of enjoyment value of 41 from the top 3 solutions are given from the SQL results:
+
++-------+-------------------+-------+---------+---------------+-------+-------+---------------+-------+-------+-----------------+-------+---------+----------------+-------+-------+
+| id1   | food1             | eval1 | id2     | food2         | eval2 | id3   | food3         | eval3 | id4   | food4           | eval4 | id5     | food5          | eval5 | e_sum |
++-------+-------------------+-------+---------+---------------+-------+-------+---------------+-------+-------+-----------------+-------+---------+----------------+-------+-------+
+| Danny | chickpea sandwich |     9 | Andreas | big mac       |     9 | James | whopper       |     7 | Arend | chicken burrito |     8 | Serafim | grilled panini |     8 |    41 |
+| Danny | chickpea sandwich |     9 | Andreas | tuna sandwich |     8 | James | whopper       |     7 | Arend | chicken burrito |     8 | Serafim | grilled panini |     8 |    40 |
+| Danny | chickpea sandwich |     9 | Andreas | big mac       |     9 | James | tuna sandwich |     6 | Arend | chicken burrito |     8 | Serafim | grilled panini |     8 |    40 |
++-------+-------------------+-------+---------+---------------+-------+-------+---------------+-------+-------+-----------------+-------+---------+----------------+-------+-------+
+3 rows in set (0.00 sec)
+
+
+
+
+3. 'Genome Search'
+To find the locations of K short sequences, each of length M within a very large genome that could not be loaded entirely into memory with only one single read.
+
+Solution:
+To compensate the limitation of memory usage, I'm assuming the disk usage would be extesively available (such as cloud services AWS EC2, S3, or, of course, DNAnexus) to allow specifying certain sliding window to search K sequences (or motifs) of known length M.
+
+The solution could then be broken into two parts:
+a) Read the genome once by splitting in to small windows of size between max(M) and 2*(min(M) with a shift of 1/2*Max(M) of our favorite K seuquences.
+b) For each window search for K sequences 
+
+Suppose my favorite sequences are 6 common restriction sites between 6-8 bps long:
+
+mysql> select * from RE;
++---------+----------+
+| enzyme  | seq      |
++---------+----------+
+| EcoRI   | GAATTC   |
+| BamHI   | GGATCC   |
+| HindIII | AAGCTT   |
+| AscI    | GGCGCGCC |
+| BglII   | AGATCT   |
+| PstI    | CTGCAG   |
++---------+----------+
+
+
+To check the restriction sites in the 2.4Gb genome of Ailuropoda melanoleuca (panda), the sequence could be parsed as this for a window of 12-bp ( between max(M)=8 and 2*(min(M)=12 with a shift of 1/2*Max(M)=4 ):
+
+mysql> select * from panda limit 5;
++------------+--------+--------------+
+| GL_id      | window | seq          |
++------------+--------+--------------+
+| GL192338.1 |      0 | tggcaagaagaa |
+| GL192338.1 |      1 | aagaagaagaaa |
+| GL192338.1 |      2 | agaagaaaaggt |
+| GL192338.1 |      3 | gaaaaggttggt |
+| GL192338.1 |      4 | aggttggtggga |
++------------+--------+--------------+
+
+
+And the solution would be given with the following query:
+
+	--
+	-- shotgun_genome_search.sql
+	--
+	SELECT DISTINCT GL_id, RE.enzyme, (4*window)+LOCATE(RE.seq,panda.seq) - 1 
+	FROM panda, RE
+	WHERE LOCATE(RE.seq,panda.seq) <> 0
+	;
+	-- END OF shotgun_genome_search.sql
